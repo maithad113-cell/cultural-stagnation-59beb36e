@@ -8,51 +8,51 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* CulturalConnect Design System - Lavender, Beige, Gold */
-    --background: 38 86% 97%;
-    --foreground: 270 30% 25%;
+    /* CulturalConnect Design System - White, Lavender, Gold */
+    --background: 0 0% 100%;
+    --foreground: 270 30% 20%;
 
     --card: 0 0% 100%;
-    --card-foreground: 270 30% 25%;
+    --card-foreground: 270 30% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 270 30% 25%;
+    --popover-foreground: 270 30% 20%;
 
     /* Lavender Primary */
-    --primary: 267 50% 74%;
+    --primary: 267 50% 64%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 267 50% 85%;
-    --primary-dark: 267 50% 60%;
+    --primary-light: 267 50% 75%;
+    --primary-dark: 267 50% 50%;
 
-    /* Beige Secondary */
-    --secondary: 38 86% 97%;
-    --secondary-foreground: 270 30% 25%;
+    /* Light Gray Secondary */
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 270 30% 20%;
 
-    --muted: 38 40% 92%;
-    --muted-foreground: 270 15% 50%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 270 15% 40%;
 
     /* Gold Accent */
-    --accent: 44 100% 74%;
-    --accent-foreground: 270 30% 25%;
+    --accent: 44 90% 60%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 267 30% 90%;
-    --input: 267 30% 90%;
-    --ring: 267 50% 74%;
+    --border: 267 20% 85%;
+    --input: 267 20% 85%;
+    --ring: 267 50% 64%;
 
     --radius: 1rem;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(267 50% 74%) 0%, hsl(267 50% 85%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(267 50% 85%) 0%, hsl(38 86% 97%) 100%);
-    --gradient-glass: linear-gradient(135deg, hsla(267 50% 85% / 0.1) 0%, hsla(38 86% 97% / 0.2) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(267 50% 64%) 0%, hsl(267 50% 75%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(267 50% 70%) 0%, hsl(0 0% 100%) 100%);
+    --gradient-glass: linear-gradient(135deg, hsla(267 50% 75% / 0.05) 0%, hsla(0 0% 100% / 0.1) 100%);
     
     /* Shadows */
-    --shadow-soft: 0 8px 32px hsla(267 50% 50% / 0.1);
-    --shadow-glow: 0 0 40px hsla(267 50% 74% / 0.3);
-    --shadow-float: 0 10px 40px hsla(267 50% 60% / 0.15);
+    --shadow-soft: 0 8px 32px hsla(267 50% 50% / 0.08);
+    --shadow-glow: 0 0 40px hsla(267 50% 64% / 0.4);
+    --shadow-float: 0 10px 40px hsla(267 50% 50% / 0.12);
 
     /* Transitions */
     --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -147,10 +147,10 @@ All colors MUST be HSL.
 
 /* Glassmorphism */
 .glass {
-  background: linear-gradient(135deg, hsla(267 50% 85% / 0.1) 0%, hsla(38 86% 97% / 0.2) 100%);
+  background: linear-gradient(135deg, hsla(267 50% 75% / 0.08) 0%, hsla(0 0% 100% / 0.95) 100%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid hsla(267 50% 90% / 0.3);
+  border: 1px solid hsla(267 50% 80% / 0.2);
 }
 
 .glass-card {
@@ -188,6 +188,6 @@ All colors MUST be HSL.
 /* Cultural Pattern Background */
 .pattern-bg {
   background-image: 
-    radial-gradient(circle at 20% 80%, hsla(267 50% 74% / 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, hsla(44 100% 74% / 0.1) 0%, transparent 50%);
+    radial-gradient(circle at 20% 80%, hsla(267 50% 64% / 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, hsla(44 90% 60% / 0.08) 0%, transparent 50%);
 }
