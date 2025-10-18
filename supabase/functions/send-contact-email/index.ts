@@ -27,10 +27,11 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Sending contact form submission:", { name, email, subject });
 
-    // Send email to your Gmail
-    const emailResponse = await resend.emails.send({
+    // Send email to your Gmail with reply-to set to sender
+    const adminEmailResponse = await resend.emails.send({
       from: "Contact Form <onboarding@resend.dev>",
       to: ["maithad113@gmail.com"],
+      replyTo: email,
       subject: `Contact Form: ${subject}`,
       html: `
         <h2>New Contact Form Submission</h2>
@@ -43,9 +44,25 @@ const handler = async (req: Request): Promise<Response> => {
       `,
     });
 
-    console.log("Email sent successfully:", emailResponse);
+    // Send confirmation email to the sender
+    const senderEmailResponse = await resend.emails.send({
+      from: "Contact Form <onboarding@resend.dev>",
+      to: [email],
+      subject: "We received your message!",
+      html: `
+        <h2>Thank you for contacting us, ${name}!</h2>
+        <p>We have received your message and will get back to you as soon as possible.</p>
+        <p><strong>Your message:</strong></p>
+        <p><em>${subject}</em></p>
+        <p>${message}</p>
+        <hr>
+        <p>Best regards,<br>The Team</p>
+      `,
+    });
 
-    return new Response(JSON.stringify(emailResponse), {
+    console.log("Emails sent successfully:", { adminEmailResponse, senderEmailResponse });
+
+    return new Response(JSON.stringify({ success: true, adminEmailResponse, senderEmailResponse }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
