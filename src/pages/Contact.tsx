@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, MessageSquare, Send, Instagram, Youtube } from "lucide-react";
+import { Mail, MessageSquare, Send, Instagram, Youtube, Phone } from "lucide-react";
 import { toast } from "sonner";
 
 const Contact = () => {
@@ -110,6 +110,21 @@ const Contact = () => {
                     We're here to support your cultural journey. Whether you have feedback, 
                     want to share your story, or explore collaboration opportunities, reach out!
                   </p>
+
+                  <div className="space-y-3 pt-4">
+                    <div className="flex items-center gap-3 text-foreground">
+                      <Mail className="h-5 w-5 text-primary" />
+                      <a href="mailto:maithad113@gmail.com" className="hover:text-primary transition-colors">
+                        maithad113@gmail.com
+                      </a>
+                    </div>
+                    <div className="flex items-center gap-3 text-foreground">
+                      <Phone className="h-5 w-5 text-primary" />
+                      <a href="tel:0115633444" className="hover:text-primary transition-colors">
+                        011 563 3444
+                      </a>
+                    </div>
+                  </div>
 
                   <div className="pt-4 border-t border-primary/20">
                     <h3 className="font-display font-bold text-foreground mb-3">
