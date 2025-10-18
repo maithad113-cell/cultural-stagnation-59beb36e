@@ -139,7 +139,9 @@ const Contact = () => {
                         <Instagram className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
                       </a>
                       <a
-                        href="#"
+                        href="https://www.youtube.com/channel/UCen77l_b9QsN_4P0QdESC3Q"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="p-3 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors group"
                         aria-label="YouTube"
                       >
