@@ -1,7 +1,17 @@
+import { useState } from "react";
 import Navigation from "@/components/Navigation";
 import { Languages, Volume2, BookOpen, Globe } from "lucide-react";
+import { toast } from "sonner";
 
 const LanguageHub = () => {
+  const [playingAudio, setPlayingAudio] = useState<string | null>(null);
+
+  const playPronunciation = (language: string, pronunciation: string) => {
+    setPlayingAudio(language);
+    // In a real app, this would play actual audio files
+    toast.info(`Playing pronunciation: ${pronunciation}`);
+    setTimeout(() => setPlayingAudio(null), 1000);
+  };
   const greetings = [
     { language: "Swahili", greeting: "Jambo", pronunciation: "JAHM-boh", meaning: "Hello" },
     { language: "Mandarin", greeting: "你好", pronunciation: "Nǐ hǎo", meaning: "Hello" },
@@ -79,10 +89,11 @@ const LanguageHub = () => {
                       </p>
                     </div>
                     <button
+                      onClick={() => playPronunciation(item.language, item.pronunciation)}
                       className="p-2 rounded-full hover:bg-primary/10 transition-colors"
                       aria-label={`Pronounce ${item.language} greeting`}
                     >
-                      <Volume2 className="h-5 w-5 text-primary group-hover:animate-glow" />
+                      <Volume2 className={`h-5 w-5 text-primary ${playingAudio === item.language ? 'animate-pulse' : 'group-hover:animate-glow'}`} />
                     </button>
                   </div>
                   <p className="text-sm text-muted-foreground font-sans mb-1">

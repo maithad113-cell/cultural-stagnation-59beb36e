@@ -1,7 +1,11 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Image as ImageIcon } from "lucide-react";
 
 const Gallery = () => {
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  
   // Placeholder for images - in production, these would be actual image URLs
   const galleryImages = [
     { id: 1, title: "Traditional African Dance", category: "Culture" },
@@ -14,6 +18,12 @@ const Gallery = () => {
     { id: 8, title: "Cultural Fashion", category: "Style" },
     { id: 9, title: "Community Gathering", category: "Culture" },
   ];
+
+  const categories = ["All", "Culture", "Art", "Festivals", "Music"];
+  
+  const filteredImages = selectedCategory === "All" 
+    ? galleryImages 
+    : galleryImages.filter(img => img.category === selectedCategory);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary to-primary/5">
@@ -34,27 +44,25 @@ const Gallery = () => {
           {/* Filter Tags */}
           <div className="max-w-6xl mx-auto mb-12 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
             <div className="flex flex-wrap gap-3 justify-center">
-              <button className="px-4 py-2 bg-primary text-primary-foreground rounded-full text-sm font-sans shadow-glow">
-                All
-              </button>
-              <button className="px-4 py-2 bg-background border border-primary/20 text-foreground rounded-full text-sm font-sans hover:bg-primary/10 transition-colors">
-                Culture
-              </button>
-              <button className="px-4 py-2 bg-background border border-primary/20 text-foreground rounded-full text-sm font-sans hover:bg-primary/10 transition-colors">
-                Art
-              </button>
-              <button className="px-4 py-2 bg-background border border-primary/20 text-foreground rounded-full text-sm font-sans hover:bg-primary/10 transition-colors">
-                Festivals
-              </button>
-              <button className="px-4 py-2 bg-background border border-primary/20 text-foreground rounded-full text-sm font-sans hover:bg-primary/10 transition-colors">
-                Music
-              </button>
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`px-4 py-2 rounded-full text-sm font-sans transition-colors ${
+                    selectedCategory === category
+                      ? "bg-primary text-primary-foreground shadow-glow"
+                      : "bg-background border border-primary/20 text-foreground hover:bg-primary/10"
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
             </div>
           </div>
 
           {/* Gallery Grid */}
           <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {galleryImages.map((image, index) => (
+            {filteredImages.map((image, index) => (
               <div
                 key={image.id}
                 className="glass-card overflow-hidden group cursor-pointer animate-fade-in-up hover:shadow-float transition-all duration-300"
@@ -85,9 +93,11 @@ const Gallery = () => {
               We welcome community submissions celebrating cultural heritage, traditions, and diversity.
               Share your photos and be part of our growing gallery.
             </p>
-            <button className="px-8 py-3 bg-primary text-primary-foreground rounded-lg shadow-glow hover:shadow-float transition-all font-sans font-semibold">
-              Submit Your Photo
-            </button>
+            <Link to="/contact">
+              <button className="px-8 py-3 bg-primary text-primary-foreground rounded-lg shadow-glow hover:shadow-float transition-all font-sans font-semibold">
+                Submit Your Photo
+              </button>
+            </Link>
           </div>
         </div>
       </main>
