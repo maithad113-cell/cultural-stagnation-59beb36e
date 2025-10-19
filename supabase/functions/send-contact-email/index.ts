@@ -27,10 +27,11 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Sending contact form submission:", { name, email, subject });
 
-    // Send email to your Gmail
-    const emailResponse = await resend.emails.send({
+    // Send email to admin with reply-to set to sender
+    const adminEmailResponse = await resend.emails.send({
       from: "Contact Form <onboarding@resend.dev>",
       to: ["maithad113@gmail.com"],
+      replyTo: email,
       subject: `Contact Form: ${subject}`,
       html: `
         <h2>New Contact Form Submission</h2>
@@ -38,14 +39,67 @@ const handler = async (req: Request): Promise<Response> => {
         <p><strong>Subject:</strong> ${subject}</p>
         <p><strong>Message:</strong></p>
         <p>${message}</p>
-        <hr>
-        <p><strong>WhatsApp:</strong> Send notification to 0115633444</p>
       `,
     });
 
-    console.log("Email sent successfully:", emailResponse);
+    console.log("Admin email sent successfully:", adminEmailResponse);
 
-    return new Response(JSON.stringify(emailResponse), {
+    // Send confirmation email to sender
+    const senderEmailResponse = await resend.emails.send({
+      from: "Contact Form <onboarding@resend.dev>",
+      to: [email],
+      subject: "We received your message!",
+      html: `
+        <h2>Thank you for contacting us, ${name}!</h2>
+        <p>We have received your message and will get back to you as soon as possible.</p>
+        <p><strong>Your message:</strong></p>
+        <p>${message}</p>
+        <hr>
+        <p>Best regards,<br>The Team</p>
+      `,
+    });
+
+    console.log("Sender confirmation email sent:", senderEmailResponse);
+
+    // Send WhatsApp notification using Meta's API
+    const whatsappToken = Deno.env.get("WHATSAPP_ACCESS_TOKEN");
+    const whatsappPhoneId = Deno.env.get("WHATSAPP_PHONE_NUMBER_ID");
+    
+    if (whatsappToken && whatsappPhoneId) {
+      try {
+        const whatsappResponse = await fetch(
+          `https://graph.facebook.com/v18.0/${whatsappPhoneId}/messages`,
+          {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${whatsappToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              messaging_product: "whatsapp",
+              to: "94115633444", // WhatsApp number in international format
+              type: "text",
+              text: {
+                body: `New Contact Form Submission\n\nFrom: ${name} (${email})\nSubject: ${subject}\nMessage: ${message}`,
+              },
+            }),
+          }
+        );
+
+        const whatsappData = await whatsappResponse.json();
+        console.log("WhatsApp notification sent:", whatsappData);
+      } catch (whatsappError: any) {
+        console.error("WhatsApp notification failed:", whatsappError.message);
+        // Don't fail the entire request if WhatsApp fails
+      }
+    } else {
+      console.log("WhatsApp credentials not configured, skipping notification");
+    }
+
+    return new Response(JSON.stringify({ 
+      adminEmail: adminEmailResponse,
+      senderEmail: senderEmailResponse,
+    }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
