@@ -29,7 +29,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send email to admin with reply-to set to sender
     const adminEmailResponse = await resend.emails.send({
-      from: "Contact Form <onboarding@resend.dev>",
+      from: `${name} via Contact Form <onboarding@resend.dev>`,
       to: ["maithad113@gmail.com"],
       replyTo: email,
       subject: `Contact Form: ${subject}`,
