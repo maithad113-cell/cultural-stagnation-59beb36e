@@ -44,23 +44,6 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Admin email sent successfully:", adminEmailResponse);
 
-    // Send confirmation email to sender
-    const senderEmailResponse = await resend.emails.send({
-      from: "Contact Form <onboarding@resend.dev>",
-      to: [email],
-      subject: "We received your message!",
-      html: `
-        <h2>Thank you for contacting us, ${name}!</h2>
-        <p>We have received your message and will get back to you as soon as possible.</p>
-        <p><strong>Your message:</strong></p>
-        <p>${message}</p>
-        <hr>
-        <p>Best regards,<br>Dennis Maitha<br>CEO</p>
-      `,
-    });
-
-    console.log("Sender confirmation email sent:", senderEmailResponse);
-
     // Send WhatsApp notification using Meta's API
     const whatsappToken = Deno.env.get("WHATSAPP_ACCESS_TOKEN");
     const whatsappPhoneId = Deno.env.get("WHATSAPP_PHONE_NUMBER_ID");
@@ -98,7 +81,6 @@ const handler = async (req: Request): Promise<Response> => {
 
     return new Response(JSON.stringify({ 
       adminEmail: adminEmailResponse,
-      senderEmail: senderEmailResponse,
     }), {
       status: 200,
       headers: {
