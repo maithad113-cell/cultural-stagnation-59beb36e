@@ -4,6 +4,7 @@ import Navigation from "@/components/Navigation";
 import FloatingLanterns from "@/components/FloatingLanterns";
 import CulturalCard from "@/components/CulturalCard";
 import { Palette, Music, Calendar, Languages, Image, BookOpen } from "lucide-react";
+import heroImage from "@/assets/hero-cultural-unity.jpg";
 
 const Index = () => {
   return (
@@ -12,6 +13,10 @@ const Index = () => {
       
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
+        <div className="absolute inset-0 z-0">
+          <img src={heroImage} alt="Cultural Unity" className="w-full h-full object-cover opacity-30" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background"></div>
+        </div>
         <FloatingLanterns />
         
         <div className="container mx-auto px-4 relative z-10">

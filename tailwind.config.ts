@@ -74,8 +74,8 @@ export default {
           "50%": { transform: "translateY(-20px) rotate(5deg)" },
         },
         glow: {
-          "0%, 100%": { boxShadow: "0 0 20px hsla(267 50% 74% / 0.3)" },
-          "50%": { boxShadow: "0 0 40px hsla(267 50% 74% / 0.6)" },
+          "0%, 100%": { boxShadow: "0 0 20px hsla(217 91% 50% / 0.3)" },
+          "50%": { boxShadow: "0 0 40px hsla(217 91% 50% / 0.6)" },
         },
         fadeInUp: {
           from: { opacity: "0", transform: "translateY(30px)" },

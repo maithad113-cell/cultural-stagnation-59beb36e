@@ -1,6 +1,7 @@
 import Navigation from "@/components/Navigation";
 import { Calendar, User, ArrowRight, BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
+import blogBanner from "@/assets/blog-banner.jpg";
 
 const Blog = () => {
   const blogPosts = [
@@ -65,6 +66,12 @@ const Blog = () => {
       <Navigation />
       
       <main className="pt-24 pb-16">
+        {/* Banner Image */}
+        <div className="relative h-64 md:h-96 mb-16 overflow-hidden">
+          <img src={blogBanner} alt="Stories and Insights" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/50 to-background"></div>
+        </div>
+
         <div className="container mx-auto px-4">
           {/* Header */}
           <div className="max-w-4xl mx-auto text-center mb-16 animate-fade-in-up">

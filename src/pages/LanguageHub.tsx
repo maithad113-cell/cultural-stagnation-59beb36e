@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Navigation from "@/components/Navigation";
 import { Languages, Volume2, BookOpen, Globe } from "lucide-react";
+import languageBanner from "@/assets/language-banner.jpg";
 
 const LanguageHub = () => {
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
@@ -59,6 +60,12 @@ const LanguageHub = () => {
       <Navigation />
       
       <main className="pt-24 pb-16">
+        {/* Banner Image */}
+        <div className="relative h-64 md:h-96 mb-16 overflow-hidden">
+          <img src={languageBanner} alt="Language Hub" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/50 to-background"></div>
+        </div>
+
         <div className="container mx-auto px-4">
           {/* Header */}
           <div className="max-w-4xl mx-auto text-center mb-16 animate-fade-in-up">

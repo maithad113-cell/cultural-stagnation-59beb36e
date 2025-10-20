@@ -1,5 +1,6 @@
 import Navigation from "@/components/Navigation";
 import { Palette, Music, Guitar, Mic2, Brush, Camera } from "lucide-react";
+import artMusicBanner from "@/assets/art-music-banner.jpg";
 
 const ArtMusic = () => {
   const artForms = [
@@ -49,6 +50,12 @@ const ArtMusic = () => {
       <Navigation />
       
       <main className="pt-24 pb-16">
+        {/* Banner Image */}
+        <div className="relative h-64 md:h-96 mb-16 overflow-hidden">
+          <img src={artMusicBanner} alt="Art and Music" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/50 to-background"></div>
+        </div>
+
         <div className="container mx-auto px-4">
           {/* Header */}
           <div className="max-w-4xl mx-auto text-center mb-16 animate-fade-in-up">
