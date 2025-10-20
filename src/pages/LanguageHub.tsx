@@ -5,10 +5,11 @@ import { Languages, Volume2, BookOpen, Globe } from "lucide-react";
 const LanguageHub = () => {
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
 
-  const playPronunciation = (language: string, greeting: string) => {
+  const playPronunciation = (language: string, greeting: string, langCode: string) => {
     setPlayingAudio(language);
     
     const utterance = new SpeechSynthesisUtterance(greeting);
+    utterance.lang = langCode;
     utterance.rate = 0.8;
     utterance.pitch = 1;
     
@@ -19,15 +20,15 @@ const LanguageHub = () => {
     window.speechSynthesis.speak(utterance);
   };
   const greetings = [
-    { language: "Swahili", greeting: "Jambo", pronunciation: "JAHM-boh", meaning: "Hello" },
-    { language: "Mandarin", greeting: "你好", pronunciation: "Nǐ hǎo", meaning: "Hello" },
-    { language: "Arabic", greeting: "السلام عليكم", pronunciation: "As-salamu alaykum", meaning: "Peace be upon you" },
-    { language: "Hindi", greeting: "नमस्ते", pronunciation: "Namaste", meaning: "I bow to you" },
-    { language: "French", greeting: "Bonjour", pronunciation: "bon-ZHOOR", meaning: "Good day" },
-    { language: "Spanish", greeting: "Hola", pronunciation: "OH-lah", meaning: "Hello" },
-    { language: "Japanese", greeting: "こんにちは", pronunciation: "Konnichiwa", meaning: "Good afternoon" },
-    { language: "Zulu", greeting: "Sawubona", pronunciation: "sah-woo-BOH-nah", meaning: "I see you" },
-    { language: "Yoruba", greeting: "Ẹ káàárọ̀", pronunciation: "eh-KAH-ah-roh", meaning: "Good morning" },
+    { language: "Swahili", greeting: "Jambo", pronunciation: "JAHM-boh", meaning: "Hello", langCode: "sw" },
+    { language: "Mandarin", greeting: "你好", pronunciation: "Nǐ hǎo", meaning: "Hello", langCode: "zh-CN" },
+    { language: "Arabic", greeting: "السلام عليكم", pronunciation: "As-salamu alaykum", meaning: "Peace be upon you", langCode: "ar" },
+    { language: "Hindi", greeting: "नमस्ते", pronunciation: "Namaste", meaning: "I bow to you", langCode: "hi" },
+    { language: "French", greeting: "Bonjour", pronunciation: "bon-ZHOOR", meaning: "Good day", langCode: "fr" },
+    { language: "Spanish", greeting: "Hola", pronunciation: "OH-lah", meaning: "Hello", langCode: "es" },
+    { language: "Japanese", greeting: "こんにちは", pronunciation: "Konnichiwa", meaning: "Good afternoon", langCode: "ja" },
+    { language: "Zulu", greeting: "Sawubona", pronunciation: "sah-woo-BOH-nah", meaning: "I see you", langCode: "zu" },
+    { language: "Yoruba", greeting: "Ẹ káàárọ̀", pronunciation: "eh-KAH-ah-roh", meaning: "Good morning", langCode: "yo" },
   ];
 
   const proverbs = [
@@ -95,7 +96,7 @@ const LanguageHub = () => {
                       </p>
                     </div>
                     <button
-                      onClick={() => playPronunciation(item.language, item.greeting)}
+                      onClick={() => playPronunciation(item.language, item.greeting, item.langCode)}
                       className="p-2 rounded-full hover:bg-primary/10 transition-colors"
                       aria-label={`Pronounce ${item.language} greeting`}
                     >
