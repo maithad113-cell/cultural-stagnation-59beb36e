@@ -55,7 +55,7 @@ const handler = async (req: Request): Promise<Response> => {
         <p><strong>Your message:</strong></p>
         <p>${message}</p>
         <hr>
-        <p>Best regards,<br>The Team</p>
+        <p>Best regards,<br>Dennis Maitha<br>CEO</p>
       `,
     });
 
