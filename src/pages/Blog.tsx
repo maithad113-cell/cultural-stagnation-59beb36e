@@ -110,7 +110,7 @@ const Blog = () => {
                       {blogPosts[0].date}
                     </span>
                   </div>
-                  <Link to="/contact" className="flex items-center gap-2 text-primary font-sans font-semibold hover:gap-3 transition-all">
+                  <Link to={`/blog/${blogPosts[0].id}`} className="flex items-center gap-2 text-primary font-sans font-semibold hover:gap-3 transition-all">
                     Read More <ArrowRight className="h-4 w-4" />
                   </Link>
                 </div>
@@ -146,7 +146,7 @@ const Blog = () => {
                     </span>
                     <span>{post.readTime}</span>
                   </div>
-                  <Link to="/contact" className="flex items-center gap-2 text-primary font-sans font-semibold text-sm hover:gap-3 transition-all">
+                  <Link to={`/blog/${post.id}`} className="flex items-center gap-2 text-primary font-sans font-semibold text-sm hover:gap-3 transition-all">
                     Read Article <ArrowRight className="h-4 w-4" />
                   </Link>
                 </div>
