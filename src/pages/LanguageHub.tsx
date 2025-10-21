@@ -2,6 +2,7 @@ import { useState } from "react";
 import Navigation from "@/components/Navigation";
 import { Languages, Volume2, BookOpen, Globe } from "lucide-react";
 import languageBanner from "@/assets/language-banner.jpg";
+import { toast } from "sonner";
 
 const LanguageHub = () => {
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
@@ -9,16 +10,49 @@ const LanguageHub = () => {
   const playPronunciation = (language: string, greeting: string, langCode: string) => {
     setPlayingAudio(language);
     
-    const utterance = new SpeechSynthesisUtterance(greeting);
-    utterance.lang = langCode;
-    utterance.rate = 0.8;
-    utterance.pitch = 1;
-    
-    utterance.onend = () => {
+    // Check if speech synthesis is available
+    if (!window.speechSynthesis) {
+      toast.error("Audio playback not supported in this browser");
       setPlayingAudio(null);
+      return;
+    }
+
+    // Wait for voices to load
+    const speakGreeting = () => {
+      const voices = window.speechSynthesis.getVoices();
+      const languageVoice = voices.find(voice => voice.lang.startsWith(langCode.split('-')[0]));
+      
+      const utterance = new SpeechSynthesisUtterance(greeting);
+      utterance.lang = langCode;
+      utterance.rate = 0.8;
+      utterance.pitch = 1;
+      
+      // Use specific voice if available
+      if (languageVoice) {
+        utterance.voice = languageVoice;
+      }
+      
+      utterance.onend = () => {
+        setPlayingAudio(null);
+      };
+      
+      utterance.onerror = (event) => {
+        console.error('Speech synthesis error:', event);
+        toast.error(`Unable to play ${language} pronunciation. This language may not be supported on your device.`);
+        setPlayingAudio(null);
+      };
+      
+      window.speechSynthesis.speak(utterance);
     };
-    
-    window.speechSynthesis.speak(utterance);
+
+    // Voices may need time to load
+    if (window.speechSynthesis.getVoices().length === 0) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        speakGreeting();
+      };
+    } else {
+      speakGreeting();
+    }
   };
   const greetings = [
     { language: "Swahili", greeting: "Jambo", pronunciation: "JAHM-boh", meaning: "Hello", langCode: "sw" },
