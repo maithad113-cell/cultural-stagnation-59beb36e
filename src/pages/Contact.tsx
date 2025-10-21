@@ -158,7 +158,7 @@ const Contact = () => {
                       <a
                         href="https://www.youtube.com/channel/UCen77l_b9QsN_4P0QdESC3Q"
                         target="_blank"
-                        rel="noopener noreferrer"
+                        rel="noopener"
                         className="p-3 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors group"
                         aria-label="YouTube"
                       >
