@@ -3,21 +3,29 @@ import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { Image as ImageIcon } from "lucide-react";
 import galleryBanner from "@/assets/gallery-banner.jpg";
+import africanDance from "@/assets/gallery-african-dance.jpg";
+import lanternFestival from "@/assets/gallery-lantern-festival.jpg";
+import streetArt from "@/assets/gallery-street-art.jpg";
+import calligraphy from "@/assets/gallery-calligraphy.jpg";
+import textiles from "@/assets/gallery-textiles.jpg";
+import unity from "@/assets/gallery-unity.jpg";
+import instruments from "@/assets/gallery-instruments.jpg";
+import fashion from "@/assets/gallery-fashion.jpg";
+import community from "@/assets/gallery-community.jpg";
 
 const Gallery = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   
-  // Placeholder for images - in production, these would be actual image URLs
   const galleryImages = [
-    { id: 1, title: "Traditional African Dance", category: "Culture" },
-    { id: 2, title: "Asian Lantern Festival", category: "Festivals" },
-    { id: 3, title: "Latin American Street Art", category: "Art" },
-    { id: 4, title: "Middle Eastern Calligraphy", category: "Art" },
-    { id: 5, title: "Indigenous Textiles", category: "Crafts" },
-    { id: 6, title: "Global Unity Celebration", category: "Events" },
-    { id: 7, title: "Traditional Instruments", category: "Music" },
-    { id: 8, title: "Cultural Fashion", category: "Style" },
-    { id: 9, title: "Community Gathering", category: "Culture" },
+    { id: 1, title: "Traditional African Dance", category: "Culture", image: africanDance },
+    { id: 2, title: "Asian Lantern Festival", category: "Festivals", image: lanternFestival },
+    { id: 3, title: "Latin American Street Art", category: "Art", image: streetArt },
+    { id: 4, title: "Middle Eastern Calligraphy", category: "Art", image: calligraphy },
+    { id: 5, title: "Indigenous Textiles", category: "Crafts", image: textiles },
+    { id: 6, title: "Global Unity Celebration", category: "Events", image: unity },
+    { id: 7, title: "Traditional Instruments", category: "Music", image: instruments },
+    { id: 8, title: "Cultural Fashion", category: "Style", image: fashion },
+    { id: 9, title: "Community Gathering", category: "Culture", image: community },
   ];
 
   const categories = ["All", "Culture", "Art", "Festivals", "Music"];
@@ -75,8 +83,12 @@ const Gallery = () => {
                 className="glass-card overflow-hidden group cursor-pointer animate-fade-in-up hover:shadow-float transition-all duration-300"
                 style={{ animationDelay: `${index * 0.05}s` }}
               >
-                <div className="aspect-square bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                  <ImageIcon className="h-16 w-16 text-primary/40" />
+                <div className="aspect-square overflow-hidden">
+                  <img 
+                    src={image.image} 
+                    alt={image.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
                 </div>
                 <div className="p-4">
                   <h3 className="font-display font-bold text-foreground mb-2">
