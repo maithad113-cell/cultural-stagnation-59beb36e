@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
-import { Image as ImageIcon } from "lucide-react";
+import { Image as ImageIcon, Upload } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import galleryBanner from "@/assets/gallery-banner.jpg";
 import africanDance from "@/assets/gallery-african-dance.jpg";
 import lanternFestival from "@/assets/gallery-lantern-festival.jpg";
@@ -15,6 +20,9 @@ import community from "@/assets/gallery-community.jpg";
 
 const Gallery = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const { toast } = useToast();
   
   const galleryImages = [
     { id: 1, title: "Traditional African Dance", category: "Culture", image: africanDance },
@@ -33,6 +41,75 @@ const Gallery = () => {
   const filteredImages = selectedCategory === "All" 
     ? galleryImages 
     : galleryImages.filter(img => img.category === selectedCategory);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
+
+  const handlePhotoSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const formData = new FormData(e.currentTarget);
+      const name = formData.get("name") as string;
+      const email = formData.get("email") as string;
+      const title = formData.get("title") as string;
+      const category = formData.get("category") as string;
+
+      if (!selectedFile) {
+        toast({
+          title: "Error",
+          description: "Please select a photo to upload",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Convert file to base64
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64String = reader.result as string;
+        const base64Data = base64String.split(",")[1];
+
+        const { error } = await supabase.functions.invoke("send-photo-submission", {
+          body: {
+            name,
+            email,
+            title,
+            category,
+            photoBase64: base64Data,
+            photoFilename: selectedFile.name,
+            photoMimeType: selectedFile.type,
+          },
+        });
+
+        if (error) throw error;
+
+        toast({
+          title: "Success!",
+          description: "Your photo has been submitted for review.",
+        });
+
+        // Reset form
+        (e.target as HTMLFormElement).reset();
+        setSelectedFile(null);
+      };
+
+      reader.readAsDataURL(selectedFile);
+    } catch (error) {
+      console.error("Error submitting photo:", error);
+      toast({
+        title: "Error",
+        description: "Failed to submit photo. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary to-primary/5">
@@ -103,20 +180,78 @@ const Gallery = () => {
           </div>
 
           {/* Upload Section */}
-          <div className="max-w-4xl mx-auto mt-16 glass-card p-12 text-center animate-fade-in-up">
-            <ImageIcon className="h-12 w-12 text-primary mx-auto mb-6 glow" />
-            <h2 className="text-3xl font-display font-bold text-foreground mb-4">
+          <div className="max-w-4xl mx-auto mt-16 glass-card p-12 animate-fade-in-up">
+            <Upload className="h-12 w-12 text-primary mx-auto mb-6 glow" />
+            <h2 className="text-3xl font-display font-bold text-foreground mb-4 text-center">
               Share Your Cultural Story
             </h2>
-            <p className="text-lg text-muted-foreground font-sans mb-8">
+            <p className="text-lg text-muted-foreground font-sans mb-8 text-center">
               We welcome community submissions celebrating cultural heritage, traditions, and diversity.
               Share your photos and be part of our growing gallery.
             </p>
-            <Link to="/contact">
-              <button className="px-8 py-3 bg-primary text-primary-foreground rounded-lg shadow-glow hover:shadow-float transition-all font-sans font-semibold">
-                Submit Your Photo
-              </button>
-            </Link>
+            
+            <form onSubmit={handlePhotoSubmit} className="space-y-6 max-w-2xl mx-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Your Name</Label>
+                  <Input id="name" name="name" placeholder="John Doe" required />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input id="email" name="email" type="email" placeholder="john@example.com" required />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="title">Photo Title</Label>
+                <Input id="title" name="title" placeholder="Traditional Dance Performance" required />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="category">Category</Label>
+                <select 
+                  id="category" 
+                  name="category" 
+                  required
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  <option value="">Select a category</option>
+                  <option value="Culture">Culture</option>
+                  <option value="Art">Art</option>
+                  <option value="Festivals">Festivals</option>
+                  <option value="Music">Music</option>
+                  <option value="Crafts">Crafts</option>
+                  <option value="Events">Events</option>
+                  <option value="Style">Style</option>
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="photo">Upload Photo</Label>
+                <Input 
+                  id="photo" 
+                  name="photo" 
+                  type="file" 
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  required 
+                />
+                {selectedFile && (
+                  <p className="text-sm text-muted-foreground">
+                    Selected: {selectedFile.name}
+                  </p>
+                )}
+              </div>
+
+              <Button 
+                type="submit" 
+                className="w-full" 
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Submitting..." : "Submit Your Photo"}
+              </Button>
+            </form>
           </div>
         </div>
       </main>
