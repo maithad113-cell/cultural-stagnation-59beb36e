@@ -29,7 +29,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Send email to admin with the article content
     const emailResponse = await resend.emails.send({
       from: "Cultural Blog <onboarding@resend.dev>",
-      to: ["your-admin-email@example.com"], // Replace with actual admin email
+      to: ["maithad113@gmail.com"],
       replyTo: email,
       subject: `New Blog Article Submission: ${title}`,
       html: `

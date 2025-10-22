@@ -31,7 +31,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Send email to admin with the photo attached
     const emailResponse = await resend.emails.send({
       from: "Cultural Gallery <onboarding@resend.dev>",
-      to: ["your-admin-email@example.com"], // Replace with actual admin email
+      to: ["maithad113@gmail.com"],
       replyTo: email,
       subject: `New Gallery Photo Submission: ${title}`,
       html: `
