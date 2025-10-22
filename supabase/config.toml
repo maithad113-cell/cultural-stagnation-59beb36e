@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.send-photo-submission]
 verify_jwt = false
+
+[functions.send-article-submission]
+verify_jwt = false
