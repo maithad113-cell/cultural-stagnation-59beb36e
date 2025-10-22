@@ -1,11 +1,40 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Sparkles } from "lucide-react";
+import { Menu, X, Sparkles, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const location = useLocation();
+
+  useEffect(() => {
+    // Check auth status
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAuthenticated(!!session);
+    };
+
+    checkAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsAuthenticated(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast.error("Error signing out");
+    } else {
+      toast.success("Signed out successfully");
+    }
+  };
 
   const navLinks = [
     { name: "Home", path: "/" },
@@ -48,11 +77,23 @@ const Navigation = () => {
                 {link.name}
               </Link>
             ))}
-            <Link to="/auth">
-              <Button variant="default" size="sm" className="ml-4">
-                Login
+            {isAuthenticated ? (
+              <Button 
+                variant="default" 
+                size="sm" 
+                className="ml-4"
+                onClick={handleLogout}
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
               </Button>
-            </Link>
+            ) : (
+              <Link to="/auth">
+                <Button variant="default" size="sm" className="ml-4">
+                  Login
+                </Button>
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -87,11 +128,25 @@ const Navigation = () => {
                   {link.name}
                 </Link>
               ))}
-              <Link to="/auth" onClick={() => setIsOpen(false)}>
-                <Button variant="default" className="w-full">
-                  Login
+              {isAuthenticated ? (
+                <Button 
+                  variant="default" 
+                  className="w-full"
+                  onClick={() => {
+                    handleLogout();
+                    setIsOpen(false);
+                  }}
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
                 </Button>
-              </Link>
+              ) : (
+                <Link to="/auth" onClick={() => setIsOpen(false)}>
+                  <Button variant="default" className="w-full">
+                    Login
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
         )}
