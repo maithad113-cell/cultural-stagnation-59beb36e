@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 const Auth = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [showResetPassword, setShowResetPassword] = useState(false);
 
   useEffect(() => {
     // Check if user is already authenticated
@@ -85,6 +86,27 @@ const Auth = () => {
     }
   };
 
+  const handleResetPassword = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get('email') as string;
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth`,
+    });
+
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Password reset email sent! Check your inbox.");
+      setShowResetPassword(false);
+    }
+    
+    setIsLoading(false);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/20 via-background to-accent/20 pattern-bg">
       <Navigation />
@@ -101,93 +123,132 @@ const Auth = () => {
               </p>
             </div>
 
-            <Tabs defaultValue="login" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-8">
-                <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="signup">Sign Up</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="login">
-                <form onSubmit={handleLogin} className="space-y-4">
+            {showResetPassword ? (
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h2 className="text-xl font-semibold mb-2">Reset Password</h2>
+                  <p className="text-sm text-muted-foreground">
+                    Enter your email to receive a password reset link
+                  </p>
+                </div>
+                <form onSubmit={handleResetPassword} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="login-email">Email</Label>
+                    <Label htmlFor="reset-email">Email</Label>
                     <Input
-                      id="login-email"
+                      id="reset-email"
                       name="email"
                       type="email"
                       placeholder="your@email.com"
                       required
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="login-password">Password</Label>
-                    <Input
-                      id="login-password"
-                      name="password"
-                      type="password"
-                      placeholder="••••••••"
-                      required
-                    />
-                  </div>
                   <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Logging in..." : "Login"}
+                    {isLoading ? "Sending..." : "Send Reset Link"}
                   </Button>
                   <p className="text-sm text-center text-muted-foreground">
-                    <a href="#" className="text-primary hover:underline">
-                      Forgot password?
-                    </a>
+                    <button
+                      type="button"
+                      onClick={() => setShowResetPassword(false)}
+                      className="text-primary hover:underline"
+                    >
+                      Back to login
+                    </button>
                   </p>
                 </form>
-              </TabsContent>
+              </div>
+            ) : (
+              <Tabs defaultValue="login" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-8">
+                  <TabsTrigger value="login">Login</TabsTrigger>
+                  <TabsTrigger value="signup">Sign Up</TabsTrigger>
+                </TabsList>
 
-              <TabsContent value="signup">
-                <form onSubmit={handleSignup} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-name">Full Name</Label>
-                    <Input
-                      id="signup-name"
-                      name="name"
-                      type="text"
-                      placeholder="Your Name"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-email">Email</Label>
-                    <Input
-                      id="signup-email"
-                      name="email"
-                      type="email"
-                      placeholder="your@email.com"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-password">Password</Label>
-                    <Input
-                      id="signup-password"
-                      name="password"
-                      type="password"
-                      placeholder="••••••••"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-confirm">Confirm Password</Label>
-                    <Input
-                      id="signup-confirm"
-                      name="confirm-password"
-                      type="password"
-                      placeholder="••••••••"
-                      required
-                    />
-                  </div>
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Creating Account..." : "Create Account"}
-                  </Button>
-                </form>
-              </TabsContent>
-            </Tabs>
+                <TabsContent value="login">
+                  <form onSubmit={handleLogin} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="login-email">Email</Label>
+                      <Input
+                        id="login-email"
+                        name="email"
+                        type="email"
+                        placeholder="your@email.com"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="login-password">Password</Label>
+                      <Input
+                        id="login-password"
+                        name="password"
+                        type="password"
+                        placeholder="••••••••"
+                        required
+                      />
+                    </div>
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                      {isLoading ? "Logging in..." : "Login"}
+                    </Button>
+                    <p className="text-sm text-center text-muted-foreground">
+                      <button
+                        type="button"
+                        onClick={() => setShowResetPassword(true)}
+                        className="text-primary hover:underline"
+                      >
+                        Forgot password?
+                      </button>
+                    </p>
+                  </form>
+                </TabsContent>
+
+                <TabsContent value="signup">
+                  <form onSubmit={handleSignup} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-name">Full Name</Label>
+                      <Input
+                        id="signup-name"
+                        name="name"
+                        type="text"
+                        placeholder="Your Name"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-email">Email</Label>
+                      <Input
+                        id="signup-email"
+                        name="email"
+                        type="email"
+                        placeholder="your@email.com"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-password">Password</Label>
+                      <Input
+                        id="signup-password"
+                        name="password"
+                        type="password"
+                        placeholder="••••••••"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-confirm">Confirm Password</Label>
+                      <Input
+                        id="signup-confirm"
+                        name="confirm-password"
+                        type="password"
+                        placeholder="••••••••"
+                        required
+                      />
+                    </div>
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                      {isLoading ? "Creating Account..." : "Create Account"}
+                    </Button>
+                  </form>
+                </TabsContent>
+              </Tabs>
+            )}
           </div>
         </div>
       </main>
