@@ -52,34 +52,40 @@ const Index = () => {
       <Navigation />
       
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
-        <div className="absolute inset-0 z-0">
-          <img src={heroImage} alt="Cultural Unity" className="w-full h-full object-cover opacity-30" />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background"></div>
-        </div>
-        <FloatingLanterns />
-        
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in-up">
-            <h1 className="text-5xl md:text-7xl font-display font-bold leading-tight">
-              <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-                Connecting Cultures
-              </span>
-              <br />
-              <span className="text-foreground">Through Unity</span>
-            </h1>
+      <main id="main-content">
+        <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16" aria-label="Hero section">
+          <div className="absolute inset-0 z-0">
+            <img 
+              src={heroImage} 
+              alt="Diverse group of people celebrating cultural unity with traditional clothing and musical instruments" 
+              className="w-full h-full object-cover opacity-30"
+              loading="eager"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background"></div>
+          </div>
+          <FloatingLanterns />
+          
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in-up">
+              <h1 className="text-5xl md:text-7xl font-display font-bold leading-tight">
+                <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+                  Connecting Cultures
+                </span>
+                <br />
+                <span className="text-foreground">Through Unity</span>
+              </h1>
             
             <p className="text-xl md:text-2xl font-display italic text-muted-foreground max-w-2xl mx-auto">
               "In diversity, there is beauty and strength. Together, we celebrate the richness of our traditions."
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link to="/know-more">
+              <Link to="/know-more" aria-label="Explore diverse cultures">
                 <Button size="lg" className="text-lg px-8 py-6 shadow-glow hover:shadow-float transition-all">
                   Explore Cultures
                 </Button>
               </Link>
-              <Link to="/gallery">
+              <Link to="/gallery" aria-label="View cultural photo gallery">
                 <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-primary hover:bg-primary/10">
                   View Gallery
                 </Button>
@@ -87,17 +93,17 @@ const Index = () => {
             </div>
           </div>
         </div>
-      </section>
+        </section>
 
-      {/* Featured Sections */}
-      <section className="py-20 relative z-10">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16 animate-fade-in-up">
-            <h2 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-4">
-              Discover Our World
-            </h2>
-            <p className="text-lg text-muted-foreground font-sans max-w-2xl mx-auto">
-              Explore the richness of global traditions, art, music, and languages that unite us all
+        {/* Featured Sections */}
+        <section className="py-20 relative z-10" aria-label="Featured cultural sections">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-16 animate-fade-in-up">
+              <h2 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-4">
+                Discover Our World
+              </h2>
+              <p className="text-lg text-muted-foreground font-sans max-w-2xl mx-auto">
+                Explore the richness of global traditions, art, music, and languages that unite us all
             </p>
           </div>
 
@@ -176,7 +182,8 @@ const Index = () => {
             </Link>
           </div>
         </div>
-      </section>
+        </section>
+      </main>
     </div>
   );
 };

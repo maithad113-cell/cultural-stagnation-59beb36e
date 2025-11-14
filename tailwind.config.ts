@@ -95,6 +95,13 @@ export default {
         glow: "glow 2s ease-in-out infinite",
         "fade-in-up": "fadeInUp 0.8s ease-out forwards",
         "slide-in-right": "slideInRight 0.8s ease-out forwards",
+        "scale-in": "scaleIn 0.3s ease-out forwards",
+      },
+      keyframes: {
+        scaleIn: {
+          "0%": { transform: "scale(0.9)", opacity: "0" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
       },
       backgroundImage: {
         "gradient-primary": "var(--gradient-primary)",

@@ -1,3 +1,4 @@
+# https://www.robotstxt.org/robotstxt.html
 User-agent: Googlebot
 Allow: /
 
@@ -12,3 +13,7 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /auth
+
+# Sitemap
+Sitemap: https://2b100628-2142-419a-a614-64f9d65313ab.lovableproject.com/sitemap.xml
