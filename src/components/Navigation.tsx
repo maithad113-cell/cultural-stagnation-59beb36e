@@ -51,12 +51,12 @@ const Navigation = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-primary/20">
+    <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-primary/20" role="navigation" aria-label="Main navigation">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 group">
-            <Sparkles className="h-6 w-6 text-primary group-hover:animate-glow" />
+          <Link to="/" className="flex items-center space-x-2 group" aria-label="CulturalConnect Home">
+            <Sparkles className="h-6 w-6 text-primary group-hover:animate-glow" aria-hidden="true" />
             <span className="text-xl font-display font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               CulturalConnect
             </span>
@@ -100,19 +100,21 @@ const Navigation = () => {
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="lg:hidden p-2 rounded-lg hover:bg-primary/10 transition-colors"
-            aria-label="Toggle menu"
+            aria-label={isOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isOpen}
+            aria-controls="mobile-menu"
           >
             {isOpen ? (
-              <X className="h-6 w-6 text-foreground" />
+              <X className="h-6 w-6 text-foreground" aria-hidden="true" />
             ) : (
-              <Menu className="h-6 w-6 text-foreground" />
+              <Menu className="h-6 w-6 text-foreground" aria-hidden="true" />
             )}
           </button>
         </div>
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="lg:hidden pb-4 animate-fade-in-up">
+          <div id="mobile-menu" className="lg:hidden pb-4 animate-fade-in-up" role="menu">
             <div className="flex flex-col space-y-2">
               {navLinks.map((link) => (
                 <Link
