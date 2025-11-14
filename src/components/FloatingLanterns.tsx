@@ -11,12 +11,14 @@ const FloatingLanterns = () => {
       {lanterns.map((lantern) => (
         <div
           key={lantern.id}
-          className="absolute w-3 h-3 bg-accent rounded-full opacity-60 blur-sm floating"
+          className="absolute w-4 h-4 rounded-full opacity-70 blur-sm floating"
           style={{
             left: lantern.left,
             top: "100%",
             animationDelay: lantern.delay,
             animationDuration: lantern.duration,
+            background: `radial-gradient(circle, hsl(${250 + Math.random() * 30} 95% ${65 + Math.random() * 10}%) 0%, hsl(${14 + Math.random() * 10} 90% ${60 + Math.random() * 10}%) 100%)`,
+            boxShadow: `0 0 20px hsl(${250 + Math.random() * 30} 95% ${65 + Math.random() * 10}% / 0.6)`,
           }}
         />
       ))}

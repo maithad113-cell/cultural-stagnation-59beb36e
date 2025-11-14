@@ -10,14 +10,15 @@ interface CulturalCardProps {
 const CulturalCard = ({ icon: Icon, title, description, delay = "0s" }: CulturalCardProps) => {
   return (
     <div
-      className="glass-card p-6 fade-in-up"
+      className="glass-card p-8 fade-in-up group cursor-pointer"
       style={{ animationDelay: delay }}
     >
-      <div className="flex flex-col items-center text-center space-y-4">
-        <div className="p-4 rounded-full bg-gradient-to-br from-primary to-accent glow">
-          <Icon className="h-8 w-8 text-white" />
+      <div className="flex flex-col items-center text-center space-y-5">
+        <div className="relative p-5 rounded-2xl bg-gradient-primary transition-all duration-500 group-hover:scale-110 group-hover:shadow-glow">
+          <Icon className="h-9 w-9 text-white" />
+          <div className="absolute inset-0 rounded-2xl bg-gradient-primary opacity-0 blur-xl group-hover:opacity-100 transition-opacity duration-500" />
         </div>
-        <h3 className="text-xl font-display font-bold text-foreground">
+        <h3 className="text-xl font-display font-bold text-foreground group-hover:text-primary transition-colors duration-300">
           {title}
         </h3>
         <p className="text-muted-foreground font-sans text-sm leading-relaxed">
