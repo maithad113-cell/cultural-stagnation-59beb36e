@@ -8,14 +8,22 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface PhotoSubmissionRequest {
-  name: string;
-  email: string;
-  title: string;
-  category: string;
-  photoBase64: string;
-  photoFilename: string;
-  photoMimeType: string;
+const esc = (s: string) =>
+  s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+// Simple in-memory rate limiter
+const rateLimitMap = new Map<string, number[]>();
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX = 3;
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const timestamps = rateLimitMap.get(ip) || [];
+  const recent = timestamps.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+  if (recent.length >= RATE_LIMIT_MAX) return true;
+  recent.push(now);
+  rateLimitMap.set(ip, recent);
+  return false;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -24,63 +32,88 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { name, email, title, category, photoBase64, photoFilename, photoMimeType }: PhotoSubmissionRequest = await req.json();
+    const ip = req.headers.get("x-forwarded-for") || req.headers.get("cf-connecting-ip") || "unknown";
+    if (isRateLimited(ip)) {
+      return new Response(
+        JSON.stringify({ error: "Too many requests. Please try again later." }),
+        { status: 429, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    const body = await req.json();
+    const name = String(body.name || "").trim();
+    const email = String(body.email || "").trim();
+    const title = String(body.title || "").trim();
+    const category = String(body.category || "").trim();
+    const photoBase64 = String(body.photoBase64 || "");
+    const photoFilename = String(body.photoFilename || "").trim();
+    const photoMimeType = String(body.photoMimeType || "").trim();
+
+    if (!name || !email || !title || !category || !photoBase64 || !photoFilename) {
+      return new Response(
+        JSON.stringify({ error: "All fields are required." }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid email address." }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    if (name.length > 100 || email.length > 255 || title.length > 200 || category.length > 100) {
+      return new Response(
+        JSON.stringify({ error: "One or more fields exceed the maximum allowed length." }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Validate mime type
+    const allowedMimeTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+    if (!allowedMimeTypes.includes(photoMimeType)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid image type. Allowed: JPEG, PNG, GIF, WebP." }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
 
     console.log("Processing photo submission from:", email);
 
-    // Send email to admin with the photo attached
     const emailResponse = await resend.emails.send({
       from: "Cultural Gallery <onboarding@resend.dev>",
       to: ["maithad113@gmail.com"],
       replyTo: email,
-      subject: `New Gallery Photo Submission: ${title}`,
+      subject: `New Gallery Photo Submission: ${esc(title)}`,
       html: `
         <h1>New Photo Submission</h1>
-        <p><strong>Submitted by:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Photo Title:</strong> ${title}</p>
-        <p><strong>Category:</strong> ${category}</p>
+        <p><strong>Submitted by:</strong> ${esc(name)}</p>
+        <p><strong>Email:</strong> ${esc(email)}</p>
+        <p><strong>Photo Title:</strong> ${esc(title)}</p>
+        <p><strong>Category:</strong> ${esc(category)}</p>
         <p>Please review the attached photo for inclusion in the gallery.</p>
       `,
       attachments: [
         {
-          filename: photoFilename,
+          filename: photoFilename.replace(/[^a-zA-Z0-9._-]/g, "_"),
           content: photoBase64,
         },
       ],
     });
 
-    console.log("Photo submission email sent successfully:", emailResponse);
+    console.log("Photo submission email sent successfully");
 
-    // Send confirmation email to submitter
-    await resend.emails.send({
-      from: "Cultural Gallery <onboarding@resend.dev>",
-      to: [email],
-      subject: "Thank you for your photo submission!",
-      html: `
-        <h1>Thank you for your submission, ${name}!</h1>
-        <p>We have received your photo submission:</p>
-        <ul>
-          <li><strong>Title:</strong> ${title}</li>
-          <li><strong>Category:</strong> ${category}</li>
-        </ul>
-        <p>We will review your submission and get back to you soon.</p>
-        <p>Best regards,<br>The Cultural Gallery Team</p>
-      `,
-    });
-
-    return new Response(JSON.stringify({ success: true, data: emailResponse }), {
+    return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   } catch (error: any) {
     console.error("Error in send-photo-submission function:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
+      JSON.stringify({ error: "An unexpected error occurred. Please try again later." }),
+      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   }
 };

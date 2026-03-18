@@ -8,12 +8,22 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface ArticleSubmissionRequest {
-  name: string;
-  email: string;
-  title: string;
-  category: string;
-  content: string;
+const esc = (s: string) =>
+  s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+// Simple in-memory rate limiter
+const rateLimitMap = new Map<string, number[]>();
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX = 3;
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const timestamps = rateLimitMap.get(ip) || [];
+  const recent = timestamps.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+  if (recent.length >= RATE_LIMIT_MAX) return true;
+  recent.push(now);
+  rateLimitMap.set(ip, recent);
+  return false;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -22,63 +32,77 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { name, email, title, category, content }: ArticleSubmissionRequest = await req.json();
+    const ip = req.headers.get("x-forwarded-for") || req.headers.get("cf-connecting-ip") || "unknown";
+    if (isRateLimited(ip)) {
+      return new Response(
+        JSON.stringify({ error: "Too many requests. Please try again later." }),
+        { status: 429, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    const body = await req.json();
+    const name = String(body.name || "").trim();
+    const email = String(body.email || "").trim();
+    const title = String(body.title || "").trim();
+    const category = String(body.category || "").trim();
+    const content = String(body.content || "").trim();
+
+    if (!name || !email || !title || !category || !content) {
+      return new Response(
+        JSON.stringify({ error: "All fields are required." }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid email address." }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    if (name.length > 100 || email.length > 255 || title.length > 200 || category.length > 100 || content.length > 50000) {
+      return new Response(
+        JSON.stringify({ error: "One or more fields exceed the maximum allowed length." }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
 
     console.log("Processing article submission from:", email);
 
-    // Send email to admin with the article content
     const emailResponse = await resend.emails.send({
       from: "Cultural Blog <onboarding@resend.dev>",
       to: ["maithad113@gmail.com"],
       replyTo: email,
-      subject: `New Blog Article Submission: ${title}`,
+      subject: `New Blog Article Submission: ${esc(title)}`,
       html: `
         <h1>New Article Submission</h1>
-        <p><strong>Submitted by:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Article Title:</strong> ${title}</p>
-        <p><strong>Category:</strong> ${category}</p>
+        <p><strong>Submitted by:</strong> ${esc(name)}</p>
+        <p><strong>Email:</strong> ${esc(email)}</p>
+        <p><strong>Article Title:</strong> ${esc(title)}</p>
+        <p><strong>Category:</strong> ${esc(category)}</p>
         <hr />
         <h2>Article Content:</h2>
         <div style="white-space: pre-wrap; background: #f5f5f5; padding: 20px; border-radius: 8px;">
-          ${content.replace(/\n/g, '<br>')}
+          ${esc(content).replace(/\n/g, '<br>')}
         </div>
         <hr />
         <p>Please review this article for publication on the blog.</p>
       `,
     });
 
-    console.log("Article submission email sent successfully:", emailResponse);
+    console.log("Article submission email sent successfully");
 
-    // Send confirmation email to submitter
-    await resend.emails.send({
-      from: "Cultural Blog <onboarding@resend.dev>",
-      to: [email],
-      subject: "Thank you for your article submission!",
-      html: `
-        <h1>Thank you for your submission, ${name}!</h1>
-        <p>We have received your article submission:</p>
-        <ul>
-          <li><strong>Title:</strong> ${title}</li>
-          <li><strong>Category:</strong> ${category}</li>
-        </ul>
-        <p>We will review your article and get back to you soon.</p>
-        <p>Best regards,<br>The Cultural Blog Team</p>
-      `,
-    });
-
-    return new Response(JSON.stringify({ success: true, data: emailResponse }), {
+    return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   } catch (error: any) {
     console.error("Error in send-article-submission function:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
+      JSON.stringify({ error: "An unexpected error occurred. Please try again later." }),
+      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   }
 };
